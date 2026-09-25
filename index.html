@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OOP City — Learn Java OOP</title>
+<style>
+:root{
+  --bg:#07111f; --panel:#0d1b2e; --panel2:#10243c; --text:#eaf4ff;
+  --muted:#9bb0c8; --accent:#62d9ff; --gold:#ffd166; --green:#6ee7a8;
+  --danger:#ff6b7a; --shadow:0 20px 60px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:
+radial-gradient(circle at 50% -10%,#17385c 0,#07111f 45%,#040a12 100%);color:var(--text);min-height:100vh}
+button{font:inherit}
+.hero{min-height:100vh;display:grid;place-items:center;text-align:center;padding:40px 20px;position:relative;overflow:hidden}
+.stars,.stars:before,.stars:after{content:"";position:absolute;inset:0;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:90px 90px;opacity:.18}
+.stars:before{background-size:137px 137px;transform:translate(35px,20px);opacity:.12}
+.hero-card{position:relative;z-index:2;max-width:900px}
+.city-icon{font-size:78px;filter:drop-shadow(0 0 25px rgba(98,217,255,.3))}
+h1{font-size:clamp(52px,10vw,110px);margin:5px 0;letter-spacing:-5px}
+.tagline{font-size:clamp(20px,3vw,32px);color:var(--muted);margin-bottom:30px}
+.btn{border:0;border-radius:14px;padding:15px 22px;background:linear-gradient(135deg,#62d9ff,#7c7cff);color:#04101c;font-weight:800;cursor:pointer;box-shadow:0 10px 30px rgba(98,217,255,.22);transition:.2s}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.btn.secondary{background:#17304b;color:var(--text);box-shadow:none}
+main{max-width:1250px;margin:auto;padding:30px 18px 110px}
+.topbar{display:flex;justify-content:space-between;gap:15px;align-items:center;position:sticky;top:0;z-index:20;padding:14px 0;background:rgba(7,17,31,.88);backdrop-filter:blur(12px)}
+.topbar h2{margin:0}
+.progress{color:var(--muted);font-size:14px}
+.map{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px;margin:25px 0}
+.building{position:relative;background:linear-gradient(180deg,#122a45,#0b1a2d);border:1px solid #21415f;border-radius:18px;padding:20px;min-height:155px;text-align:left;cursor:pointer;transition:.22s;box-shadow:var(--shadow);color:var(--text)}
+.building:hover{transform:translateY(-5px);border-color:var(--accent)}
+.building.visited{border-color:var(--green);background:linear-gradient(180deg,#12352e,#0b1f22)}
+.building .emoji{font-size:38px}.building h3{margin:9px 0 4px}.building p{margin:0;color:var(--muted);font-size:13px}
+.stamp{position:absolute;right:13px;top:13px;font-size:13px;color:var(--green);font-weight:800}
+.lesson{display:none;margin-top:25px;background:linear-gradient(180deg,#0e2035,#091523);border:1px solid #23435f;border-radius:22px;padding:26px;box-shadow:var(--shadow)}
+.lesson.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.lesson-head{display:flex;justify-content:space-between;gap:20px;align-items:start}
+.lesson h2{font-size:32px;margin:0 0 8px}.lesson .story{font-size:18px;line-height:1.65;color:#d5e5f5}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}.topbar{position:static}.lesson-head{flex-direction:column}}
+.card{background:#081522;border:1px solid #1b3852;border-radius:15px;padding:18px}
+.card h3{margin-top:0}
+pre{margin:0;background:#050b12;border-radius:12px;padding:16px;overflow:auto;color:#d8f3ff;line-height:1.55;border:1px solid #193047}
+code{font-family:"SFMono-Regular",Consolas,monospace}
+.highlight{border-left:4px solid var(--accent);padding:12px 15px;background:#0b2638;border-radius:8px;margin-top:15px}
+.warning{border-left-color:var(--gold);background:#2a2412}
+.interactive{margin-top:20px;background:linear-gradient(135deg,#102b42,#111d34);border-radius:16px;padding:20px;text-align:center}
+.scene{font-size:25px;margin:15px 0;min-height:45px}
+.quiz{margin-top:22px}.quiz button{margin:5px;padding:10px 14px;border-radius:10px;border:1px solid #2a506d;background:#112a40;color:white;cursor:pointer}
+.quiz button:hover{border-color:var(--accent)}
+.passport{margin-top:30px;padding:24px;border:1px solid #765f22;background:linear-gradient(135deg,#171c22,#292312);border-radius:22px}
+.passport h2{text-align:center;color:var(--gold)}
+.passgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.passitem{padding:9px 11px;border-radius:9px;background:#0c1520;color:#71849a}.passitem.done{color:#b8ffd9;background:#10271f}
+.empty{color:var(--muted);text-align:center;padding:20px}
+.reset{position:fixed;right:20px;bottom:20px;z-index:100;border:1px solid #5b2732;background:#28131a;color:#ffdce1;border-radius:50px;padding:12px 16px;cursor:pointer;box-shadow:0 12px 35px rgba(0,0,0,.45)}
+.toast{position:fixed;left:50%;bottom:25px;transform:translate(-50%,20px);background:#13283b;border:1px solid #315b78;color:white;padding:12px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:101}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.footer{text-align:center;color:#657c95;margin-top:35px;font-size:13px}
+</style>
+</head>
+<body>
+<section class="hero" id="home">
+  <div class="stars"></div>
+  <div class="hero-card">
+    <div class="city-icon">🌆</div>
+    <h1>OOP CITY</h1>
+    <div class="tagline">Where Everything Is an Object</div>
+    <p style="color:#b5c8db;font-size:18px">Learn Java OOP by exploring the city.</p>
+    <button class="btn" onclick="enterCity()">ENTER OOP CITY 🚀</button>
+  </div>
+</section>
+
+<main id="city" style="display:none">
+  <div class="topbar">
+    <div><h2>🌆 OOP CITY</h2><div class="progress" id="progress"></div></div>
+    <button class="btn secondary" onclick="goHome()">← City Gate</button>
+  </div>
+
+  <section>
+    <h2>🗺️ The OOP City Map</h2>
+    <p style="color:var(--muted)">Every concept is a place. Click a building to learn, interact, and earn a passport stamp.</p>
+    <div class="map" id="map"></div>
+  </section>
+
+  <section id="lesson" class="lesson"></section>
+
+  <section class="passport">
+    <h2>🏆 OOP CITY PASS</h2>
+    <p style="text-align:center;color:var(--muted)">Visit a building to collect its stamp. Your progress is saved on this device until you use the reset button.</p>
+    <div class="passgrid" id="passport"></div>
+    <p id="completion" style="text-align:center;font-weight:800"></p>
+  </section>
+  <div class="footer">🌆 OOP City · Java OOP learning project</div>
+</main>
+
+<button id="resetCityBtn" class="reset" type="button">↻ Reset City</button>
+<div class="toast" id="toast"></div>
+
+<script>
+const lessons = [
+{id:"class",icon:"🏫",title:"Class School",subtitle:"Class & Object",story:"A class is a blueprint. An object is an actual instance created from that blueprint.",code:`class Car {
+    String color;
+    String model;
+
+    void drive() {
+        System.out.println("Driving...");
+    }
+}
+
+Car car1 = new Car();
+Car car2 = new Car();`,why:"The class describes what every Car can contain and do. Each new Car creates a separate object with its own state.",scene:"🚗 CAR CLASS → Blueprint → 🚗 Car 1 (Red)   🚙 Car 2 (Blue)",extra:"Two objects can be created from one class. The blueprint is not itself an object."},
+{id:"encapsulation",icon:"🏦",title:"Encapsulation Bank",subtitle:"Protecting data",story:"A real bank does not let everyone walk into the vault. It provides controlled ways to access and change what is inside.",code:`class BankAccount {
+    private double balance;
+
+    public void deposit(double amount) {
+        if (amount > 0)
+            balance += amount;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+}`,why:"private protects the data. public methods provide controlled access, so the object can decide how its data changes.",scene:"🧑 Customer → 🏦 Bank → 🔒 Private Vault",extra:"The object controls how its data changes instead of exposing the field directly."},
+{id:"inheritance",icon:"🌳",title:"Inheritance Park",subtitle:"Reusing a parent",story:"Think of a family tree: a child can receive characteristics from a parent and add its own behavior.",code:`class Student extends Person {
+    void study() {
+        System.out.println("Studying");
+    }
+}`,why:"Student inherits the properties and methods of Person and can add its own behavior.",scene:"👨 Person → 👨‍🎓 Student   👩‍🏫 Teacher   👨‍💻 Programmer",extra:"Inheritance creates an is-a relationship between a child class and its parent."},
+{id:"polymorphism",icon:"🎭",title:"Polymorphism Theatre",subtitle:"Same call, different behavior",story:"One command can produce different behavior depending on which object receives it.",code:`Person p1 = new Student();
+Person p2 = new Teacher();
+Person p3 = new Programmer();
+
+p1.speak();
+p2.speak();
+p3.speak();`,why:"The same method call can lead to different overridden implementations.",scene:"👮 SPEAK! → 👨‍🎓 “I have an exam!”   👩‍🏫 “Submit your assignment!”   👨‍💻 “It works on my machine!”",extra:"💡 Same method call → Different behavior."},
+{id:"constructor",icon:"🏗️",title:"Constructor Lab",subtitle:"Initializing objects",story:"A constructor is Java's initialization step. When new Student(\"Rahul\") runs, the constructor receives the argument and initializes the object's fields.",code:`class Student {
+    String name;
+
+    Student(String name) {
+        this.name = name;
+    }
+}
+
+Student s = new Student("Rahul");`,why:"The constructor helps put the object into a known initial state before the constructor finishes. Fields can still change later unless they are made immutable/final.",scene:"new Student(\"Rahul\") → 🏗️ Constructor → 📦 Object created → ⚙️ State initialized",extra:"A constructor has the same name as its class and has no return type."},
+{id:"overloading",icon:"🔀",title:"Overloading Station",subtitle:"One name, different parameters",story:"Imagine ordering food at a station: the same order name can accept different combinations of information.",code:`void order() { }
+void order(String food) { }
+void order(String food, int qty) { }`,why:"Same method name + different parameter types/counts = method overloading. Java resolves the overload at compile time from the arguments.",scene:"ORDER → order()   |   order(food)   |   order(food, qty)",extra:"Return type alone cannot distinguish overloaded methods."},
+{id:"overriding",icon:"🧬",title:"Overriding Arena",subtitle:"Child changes inherited behavior",story:"A child class keeps the inherited method contract but supplies its own implementation.",code:`class Animal {
+    void speak() { }
+}
+
+class Dog extends Animal {
+    @Override
+    void speak() {
+        System.out.println("Bark!");
+    }
+}`,why:"The method has the same name and parameter list in parent and child, while the child provides a different implementation. The overridden implementation is selected at runtime based on the actual object.",scene:"🐾 Animal → speak()    🐕 Dog → “Bark!”",extra:"Java's method signature consists of the method name and parameter types; return type is not part of the signature."},
+{id:"static",icon:"⚡",title:"Static & Final Tower",subtitle:"Class-level and fixed elements",story:"The tower has two floors: STATIC belongs to the class; FINAL marks something that cannot be reassigned/overridden/extended depending on where it is used.",code:`class School {
+    static String school = "ABC";
+}
+
+final int MAX = 100;`,why:"A static field is shared at the class level. final has context-dependent restrictions: a final variable cannot be reassigned, a final method cannot be overridden, and a final class cannot be extended.",scene:"⚡ FLOOR 1: STATIC — class level   |   🔒 FLOOR 2: FINAL — restricted change",extra:"The exact meaning of final depends on whether it is applied to a variable, method, or class."},
+{id:"abstract",icon:"🧩",title:"Abstract Center",subtitle:"Blueprint with incomplete behavior",story:"An abstract class can provide common behavior while leaving some behavior for subclasses to implement.",code:`abstract class Vehicle {
+    abstract void move();
+}
+
+class Car extends Vehicle {
+    void move() {
+        System.out.println("Car moves");
+    }
+}`,why:"A concrete subclass must supply its own implementation of an abstract method. Another abstract subclass can pass that responsibility further down.",scene:"🧩 ABSTRACT VEHICLE → 🚗 Car   🚲 Bike",extra:"You cannot instantiate an abstract class directly."},
+{id:"interface",icon:"📜",title:"Interface Hall",subtitle:"A contract for behavior",story:"Think of an interface as a contract: any concrete class that implements it must provide the required behavior.",code:`interface Payment {
+    void pay();
+}
+
+class UPI implements Payment {
+    public void pay() {
+        System.out.println("Paid by UPI");
+    }
+}`,why:"Any concrete class that implements Payment must provide the required pay() implementation. Implementing classes do not need to be related through inheritance.",scene:"📜 PAYMENT CONTRACT → 💳 UPI   💳 Card   👛 Wallet",extra:"Interfaces are useful for describing capabilities that different, otherwise unrelated classes can provide."},
+{id:"generics",icon:"📦",title:"Generics Store",subtitle:"Type-safe reusable boxes",story:"A magical store uses one box design for many types. T is a placeholder type that is filled in when you use the box.",code:`class Box<T> {
+    T value;
+}
+
+Box<String> b1 = new Box<>("Hi");
+Box<Integer> b2 = new Box<>(42);`,why:"Generics let you write reusable code while retaining compile-time type information.",scene:"📦 Box<T> → String “Hi”   |   Integer 42",extra:"The type argument tells Java what kind of value the generic structure is intended to hold."},
+{id:"collections",icon:"📚",title:"Collections Library",subtitle:"List, Set & Map",story:"Three library rooms solve different data-organization problems.",code:`List<String> names = new ArrayList<>();
+Set<String> unique = new HashSet<>();
+Map<Integer, String> users = new HashMap<>();`,why:"List → ordered elements and can contain duplicates. Set → unique elements. Map → key-value lookup. List and Set are in the Collection hierarchy; Map is a separate interface hierarchy.",scene:"📋 LIST → order/duplicates   🎯 SET → uniqueness   🗺️ MAP → key → value",extra:"Choose the structure based on the behavior your program needs."},
+{id:"exceptions",icon:"🚨",title:"Exception Emergency Center",subtitle:"Handling runtime problems",story:"When a program encounters a problem, an exception can transfer control to a matching handler.",code:`try {
+    int x = 10 / 0;
+}
+catch (ArithmeticException e) {
+    System.out.println("Cannot divide by zero");
+}`,why:"If the exception is caught, control moves to the matching catch block, where the program can decide how to recover. If it is not handled, the current thread terminates.",scene:"💻 PROGRAM → ❗ ERROR → 🚨 EXCEPTION → 🛟 catch → ▶️ controlled continuation",extra:"Not every exception is recoverable. The exact control flow after handling depends on the surrounding program."},
+{id:"fileio",icon:"📁",title:"File I/O Office",subtitle:"Writing and reading files",story:"Java programs can send data to files and read data back from them.",code:`try (FileWriter writer =
+        new FileWriter("notes.txt")) {
+    writer.write("Hello OOP City!");
+}`,why:"Closing a writer finishes the writing operation and flushes buffered data while releasing the file resource. Try-with-resources closes it automatically.",scene:"💻 Java Program → ✍️ Write → 📄 notes.txt → 📖 Read",extra:"Try-with-resources is a common way to manage resources that implement AutoCloseable."},
+{id:"lambda",icon:"⚡",title:"Lambda Express",subtitle:"Same idea, less code",story:"A lambda is a compact way of supplying behavior for a functional interface.",code:`// Traditional
+Runnable r = new Runnable() {
+    public void run() {
+        System.out.println("Hello OOP City!");
+    }
+};
+
+// Lambda
+Runnable r =
+    () -> System.out.println("Hello OOP City!");`,why:"The lambda provides the implementation of the functional interface's single abstract method.",scene:"🚂 Traditional code ─────────→ ⚡ Lambda: () -> System.out.println(...)",extra:"Lambdas are especially useful with functional interfaces and APIs such as streams."},
+{id:"threads",icon:"🧵",title:"Thread City",subtitle:"Concurrent work",story:"A program can have several threads making progress concurrently, allowing different tasks to proceed without requiring one task to finish before another can begin.",code:`Thread t1 = new Thread(() -> cook());
+Thread t2 = new Thread(() -> serve());
+Thread t3 = new Thread(() -> takeOrders());
+
+t1.start();
+t2.start();
+t3.start();`,why:"Multithreading allows multiple threads to execute concurrently, subject to the JVM, operating system, and available CPU resources.",scene:"👨‍🍳 Thread 1 → Cooking   🧑‍🍳 Thread 2 → Serving   👩‍🍳 Thread 3 → Taking orders",extra:"Concurrency does not necessarily mean literal simultaneous execution on separate CPU cores."},
+{id:"sync",icon:"🔒",title:"Synchronization Hub",subtitle:"Protecting shared resources",story:"Use the one-bathroom analogy: when multiple threads need the same shared resource, synchronization can make access orderly.",code:`synchronized void useResource() {
+    // shared resource
+}`,why:"A synchronized instance method uses the object's monitor. For the same object, only one thread can enter that synchronized method at a time.",scene:"👨 Thread 1 → 🚪 → done   👩 Thread 2 → 🚪 → done   👨 Thread 3 → 🚪 → done",extra:"Synchronization protects a particular critical section/monitor; it does not mean the entire program stops."},
+{id:"copy",icon:"🏠",title:"Copy Center",subtitle:"Shallow vs Deep Copy",story:"The important question is what happens to nested mutable objects when you copy an object.",code:`// Shallow
+Car A ──→ Engine A
+Car B ──→ Engine A
+
+// Deep
+Car A ──→ Engine A
+Car B ──→ Engine B`,why:"With a shallow copy, nested references can still point to the same object. With a deep copy, the nested mutable object is independently copied.",scene:"Shallow: 🚗 A ─→ ⚙️ Engine A ←─ 🚙 B   |   Deep: 🚗 A ─→ ⚙️ A    🚙 B ─→ ⚙️ B",extra:"Sharing an immutable String reference is normally fine; the important issue is shared mutable nested state."}
+];
+
+let visited = new Set();
+
+function loadState(){
+  try { visited = new Set(JSON.parse(localStorage.getItem("oopCityVisited") || "[]")); }
+  catch(e){ visited = new Set(); }
+}
+function saveState(){
+  try { localStorage.setItem("oopCityVisited", JSON.stringify([...visited])); }
+  catch(e){ showToast("Progress could not be saved in this browser."); }
+}
+function enterCity(){
+  document.getElementById("home").style.display="none";
+  document.getElementById("city").style.display="block";
+  window.scrollTo({top:0,behavior:"smooth"});
+  renderMap(); renderPassport();
+}
+function goHome(){
+  document.getElementById("city").style.display="none";
+  document.getElementById("home").style.display="grid";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function renderMap(){
+  document.getElementById("map").innerHTML = lessons.map(x => `
+    <button class="building ${visited.has(x.id)?"visited":""}" onclick="openLesson('${x.id}')">
+      <span class="emoji">${x.icon}</span>
+      ${visited.has(x.id)?'<span class="stamp">✓ VISITED</span>':''}
+      <h3>${x.title}</h3><p>${x.subtitle}</p>
+    </button>`).join("");
+  document.getElementById("progress").textContent = `${visited.size}/${lessons.length} city stamps collected`;
+}
+function renderPassport(){
+  document.getElementById("passport").innerHTML = lessons.map(x =>
+    `<div class="passitem ${visited.has(x.id)?"done":""}">${visited.has(x.id)?"☑":"☐"} ${x.subtitle}</div>`
+  ).join("");
+  const c=document.getElementById("completion");
+  c.textContent = visited.size===lessons.length ? "🎓 Congratulations! You completed OOP City." : `Keep exploring — ${lessons.length-visited.size} stamp${lessons.length-visited.size===1?"":"s"} left.`;
+}
+function openLesson(id){
+  const x=lessons.find(v=>v.id===id);
+  visited.add(id); saveState(); renderMap(); renderPassport();
+  const lesson=document.getElementById("lesson");
+  lesson.innerHTML=`
+    <div class="lesson-head">
+      <div><div style="font-size:45px">${x.icon}</div><h2>${x.title}</h2><p style="color:var(--accent);font-weight:800">${x.subtitle}</p></div>
+      <button class="btn secondary" onclick="closeLesson()">✕ Close</button>
+    </div>
+    <p class="story">${x.story}</p>
+    <div class="grid2">
+      <div class="card"><h3>💻 Java</h3><pre><code>${escapeHtml(x.code)}</code></pre></div>
+      <div class="card"><h3>🔑 Why it works</h3><p style="line-height:1.7;color:#c8d8e8">${x.why}</p><div class="highlight">${x.extra}</div></div>
+    </div>
+    <div class="interactive"><strong>Interactive scene</strong><div class="scene">${x.scene}</div><button class="btn" onclick="showToast('Stamp collected for ${x.subtitle}!')">Collect / replay scene ✨</button></div>
+    <div class="quiz"><strong>Quick check:</strong> ${quizQuestion(x)}</div>`;
+  lesson.classList.add("active");
+  lesson.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function quizQuestion(x){
+  const q = {
+    class:["What creates an actual object from a class?","new Car()","class Car","String color"],
+    encapsulation:["Which access modifier directly restricts field access?","private","public","static"],
+    inheritance:["Which keyword establishes class inheritance?","extends","implements","final"],
+    polymorphism:["What is the key idea?","Same call, different behavior","Only one object","No methods"],
+    constructor:["When does initialization occur?","During construction","Only after program ends","Only at compile time"],
+    overloading:["What changes between overloads?","Parameter list","Class name only","Return type only"],
+    overriding:["Where is an overridden implementation selected?","At runtime based on the actual object","Only by variable name","Only by return type"],
+    static:["What does static generally indicate?","Class-level member","Private member","Immutable object"],
+    abstract:["Can an abstract class be instantiated directly?","No","Yes, always","Only with final"],
+    interface:["What must a concrete implementing class provide?","Required interface methods","A parent class","A constructor named Payment"],
+    generics:["What is T?","A placeholder type","A method","A package"],
+    collections:["Which maps keys to values?","Map","Set","List"],
+    exceptions:["Where does a caught exception transfer control?","Matching catch block","Constructor","Import statement"],
+    fileio:["What helps automatically close a writer?","try-with-resources","static","extends"],
+    lambda:["What does a lambda supply?","Behavior for a functional interface","A new class file","A package"],
+    threads:["What does concurrency allow?","Multiple threads to make progress","Only one task","Only sequential execution"],
+    sync:["What does synchronized protect?","A monitor/critical section","The whole JVM","Every class"],
+    copy:["What can shallow copying share?","Nested referenced objects","Only primitive literals","Class names"]
+  }[x.id];
+  return `<p>${q[0]}</p><button onclick="showToast(this.textContent=== '${q[1]}'?'Correct!':'Try again.')">${q[1]}</button><button onclick="showToast('Keep exploring the lesson.')">${q[2]}</button><button onclick="showToast('Keep exploring the lesson.')">${q[3]}</button>`;
+}
+function closeLesson(){document.getElementById("lesson").classList.remove("active");}
+function resetCity(){
+  // Reset immediately: no confirmation popup can block the action.
+  visited = new Set();
+  try {
+    localStorage.removeItem("oopCityVisited");
+    sessionStorage.removeItem("oopCityVisited");
+  } catch(e) {}
+
+  // Force the UI back to the true landing page.
+  const lesson = document.getElementById("lesson");
+  const city = document.getElementById("city");
+  const home = document.getElementById("home");
+  if (lesson) lesson.classList.remove("active");
+  if (city) city.style.display = "none";
+  if (home) home.style.display = "grid";
+
+  // Reset the scroll position and refresh all city/passport state.
+  renderMap();
+  renderPassport();
+  window.scrollTo(0, 0);
+
+  showToast("🌆 City reset! Start again from the front page.");
+}
+
+// Attach the reset handler directly as well as through the button definition.
+// This avoids inline-handler issues in restricted/browser preview environments.
+document.addEventListener("DOMContentLoaded", function(){
+  const btn = document.getElementById("resetCityBtn");
+  if (btn) btn.addEventListener("click", resetCity);
+});
+function showToast(msg){
+  const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(window.toastTimer); window.toastTimer=setTimeout(()=>t.classList.remove("show"),2200);
+}
+function escapeHtml(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+loadState();
+</script>
+</body>
+</html>
